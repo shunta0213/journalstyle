@@ -11,6 +11,12 @@ SciencePlots との違いは次の3点です。
 ## インストール
 
 ```bash
+pip install git+https://github.com/shunta0213/journalstyle.git
+```
+
+このリポジトリを手元で直すときは次です。
+
+```bash
 pip install -e .
 ```
 

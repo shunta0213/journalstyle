@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Matplotlib styles sized to journal column widths"
 readme = "README.md"
 requires-python = ">=3.9"
+license = "MIT"
 dependencies = ["matplotlib>=3.6"]
+
+[project.urls]
+Homepage = "https://github.com/shunta0213/journalstyle"
+Repository = "https://github.com/shunta0213/journalstyle"
 
 [project.optional-dependencies]
 dev = ["pytest"]
