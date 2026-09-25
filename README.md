@@ -67,6 +67,13 @@ LaTeX で文字を組む場合だけ `latex=True` にします。このときは
 数値の出典は `src/journalstyle/specs.py` の各 `source` です。雑誌を足すときは、そこに幅と文字サイズを書き、`styles/journal-<key>.mplstyle` に1段幅の `figure.figsize` と書体を追加してください。高さは幅の 0.75 倍、小数3桁です。
 
 ```bash
-python examples/make_gallery.py
-pytest
+.venv/bin/python examples/make_gallery.py
+.venv/bin/pytest
 ```
+
+`make_gallery.py` は代表的な図（折れ線・誤差付き散布図・棒・ヒストグラム・ヒートマップ）を LaTeX で全雑誌スタイルに描き、次を書き出します。一覧は `examples/GALLERY.md` です。
+
+- `examples/output/gallery_all.{pdf,png}` — 雑誌×図種別の全体グリッド
+- `examples/output/gallery_<plot>.{pdf,png}` — 図種別ごとの横並び比較
+- `examples/output/<plot>/<journal>.{pdf,png}` — 雑誌寸法どおりの単独図
+- Cursor 用ギャラリー canvas（スクリプトが更新）

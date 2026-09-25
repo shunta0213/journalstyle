@@ -22,6 +22,12 @@ from matplotlib import rc_params_from_file
 from .specs import JOURNALS, Journal
 
 DEFAULT_ASPECT = 0.75
+# Matplotlib loads mathptmx or helvet from the journal font list. sfmath keeps
+# sans-serif math in the same face instead of Computer Modern.
+_LATEX_PREAMBLE = {
+    "serif": r"\usepackage{amsmath} \usepackage{amssymb}",
+    "sans-serif": r"\usepackage{amsmath} \usepackage{amssymb} \usepackage{sfmath}",
+}
 _FONT_KEYS = (
     "font.size",
     "axes.labelsize",
@@ -95,9 +101,18 @@ def _layers(
     latex: bool,
     extras: Sequence[str],
 ) -> list:
-    get(journal)
+    spec = get(journal)
     layers: list = ["journal", f"journal-{journal}"]
-    layers.append("journal-latex" if latex else "journal-no-latex")
+    if latex:
+        layers.append("journal-latex")
+        latex_rc: dict = {"text.latex.preamble": _LATEX_PREAMBLE[spec.family]}
+        # Matplotlib also loads the serif face. The default list includes Times,
+        # and mathptmx then clashes with sfmath.
+        if spec.family == "sans-serif":
+            latex_rc["font.serif"] = ["Computer Modern Roman"]
+        layers.append(latex_rc)
+    else:
+        layers.append("journal-no-latex")
     layers.extend(extras)
     layers.append({"figure.figsize": figure_size(journal, columns, aspect)})
     return layers
