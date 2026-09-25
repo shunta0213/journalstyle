@@ -1,0 +1,13 @@
+# RSC. 8.3 cm single column, 17.1 cm double column. Minimum type 7 pt.
+
+figure.figsize: 3.268, 2.451
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 7
+axes.labelsize: 7
+axes.titlesize: 7
+xtick.labelsize: 7
+ytick.labelsize: 7
+legend.fontsize: 7
+legend.title_fontsize: 7

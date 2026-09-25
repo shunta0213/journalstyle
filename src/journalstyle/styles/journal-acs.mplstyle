@@ -1,0 +1,14 @@
+# ACS article graphics, commonly 3.25 in or 7 in.
+# https://pubs.acs.org/page/4authors/submission/graphics.html
+
+figure.figsize: 3.25, 2.438
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 7
+axes.labelsize: 7
+axes.titlesize: 7
+xtick.labelsize: 7
+ytick.labelsize: 7
+legend.fontsize: 7
+legend.title_fontsize: 7

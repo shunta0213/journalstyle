@@ -1,0 +1,16 @@
+# IEEE journals. One column 3.5 in, two columns 7.16 in.
+# Type about 9–10 pt. Series stay distinct in grayscale.
+# https://journals.ieeeauthorcenter.ieee.org/create-your-ieee-journal-article/create-graphics-for-your-article/resolution-and-size/
+
+figure.figsize: 3.5, 2.625
+font.family: serif
+font.serif: Times New Roman, Times, STIXGeneral, DejaVu Serif
+mathtext.fontset: stix
+font.size: 9
+axes.labelsize: 9
+axes.titlesize: 9
+xtick.labelsize: 9
+ytick.labelsize: 9
+legend.fontsize: 9
+legend.title_fontsize: 9
+axes.prop_cycle: (cycler('color', ['4477AA', 'EE6677', '228833', 'CCBB44', '66CCEE', 'AA3377', 'BBBBBB']) + cycler('linestyle', ['-', '--', '-.', ':', '-', '--', '-.']))

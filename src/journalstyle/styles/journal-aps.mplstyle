@@ -1,0 +1,18 @@
+# APS Physical Review. One column is 3 3/8 in.
+# https://journals.aps.org/authors/style-basics
+# Smallest capitals >= 2 mm (~8 pt). Strokes >= 0.5 pt.
+
+figure.figsize: 3.375, 2.531
+font.family: serif
+font.serif: STIXGeneral, Times New Roman, Times, DejaVu Serif
+mathtext.fontset: stix
+font.size: 8
+axes.labelsize: 8
+axes.titlesize: 8
+xtick.labelsize: 8
+ytick.labelsize: 8
+legend.fontsize: 8
+legend.title_fontsize: 8
+axes.linewidth: 0.6
+lines.linewidth: 1.0
+lines.markersize: 4

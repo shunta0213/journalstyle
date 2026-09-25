@@ -1,0 +1,5 @@
+# Set text and math with LaTeX. Requires a TeX installation.
+# LaTeX then controls the face (Computer Modern unless the preamble changes it).
+
+text.usetex: True
+text.latex.preamble: \usepackage{amsmath} \usepackage{amssymb}

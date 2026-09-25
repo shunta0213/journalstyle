@@ -1,0 +1,17 @@
+# Nature. 89 mm single column, text at most 7 pt, strokes 0.25–1 pt.
+# https://www.nature.com/nature/for-authors/final-submission
+
+figure.figsize: 3.504, 2.628
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 7
+axes.labelsize: 7
+axes.titlesize: 7
+xtick.labelsize: 7
+ytick.labelsize: 7
+legend.fontsize: 7
+legend.title_fontsize: 7
+axes.linewidth: 0.5
+lines.linewidth: 0.8
+lines.markersize: 3.5

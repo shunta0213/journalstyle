@@ -1,0 +1,3 @@
+# Grayscale-safe series. Apply after a journal style.
+
+axes.prop_cycle: (cycler('color', ['000000', '404040', '808080', '000000', '404040', '808080', '000000']) + cycler('linestyle', ['-', '--', '-.', ':', '-', '--', '-.']))

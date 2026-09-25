@@ -1,0 +1,14 @@
+# Elsevier. 90 mm / 140 mm / 190 mm. Body type 7 pt.
+# https://www.elsevier.com/researcher/author/policies-and-guidelines/artwork-and-media-instructions
+
+figure.figsize: 3.543, 2.657
+font.family: sans-serif
+font.sans-serif: Arial, Helvetica, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 7
+axes.labelsize: 7
+axes.titlesize: 7
+xtick.labelsize: 7
+ytick.labelsize: 7
+legend.fontsize: 7
+legend.title_fontsize: 7

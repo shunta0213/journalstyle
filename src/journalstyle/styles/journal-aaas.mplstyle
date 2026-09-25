@@ -1,0 +1,15 @@
+# Science (AAAS). Usual printed widths: 5.7 cm, 12.1 cm, 18.4 cm.
+# This file is the 1-column size. Most plots want columns=2.
+# https://www.science.org/content/page/instructions-preparing-initial-manuscript
+
+figure.figsize: 2.244, 1.683
+font.family: sans-serif
+font.sans-serif: Helvetica, Arial, DejaVu Sans
+mathtext.fontset: dejavusans
+font.size: 7
+axes.labelsize: 7
+axes.titlesize: 7
+xtick.labelsize: 7
+ytick.labelsize: 7
+legend.fontsize: 7
+legend.title_fontsize: 7

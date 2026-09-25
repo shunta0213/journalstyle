@@ -1,0 +1,51 @@
+# Shared publication defaults. Journal styles override size and type.
+# Colors: Paul Tol bright, colorblind-safe.
+# https://sronpersonalpages.nl/~pault/
+
+axes.prop_cycle: cycler('color', ['4477AA', 'EE6677', '228833', 'CCBB44', '66CCEE', 'AA3377', 'BBBBBB'])
+
+xtick.direction: in
+ytick.direction: in
+xtick.top: True
+ytick.right: True
+xtick.minor.visible: True
+ytick.minor.visible: True
+xtick.major.size: 3
+ytick.major.size: 3
+xtick.minor.size: 1.5
+ytick.minor.size: 1.5
+xtick.major.width: 0.6
+ytick.major.width: 0.6
+xtick.minor.width: 0.4
+ytick.minor.width: 0.4
+
+axes.linewidth: 0.6
+axes.axisbelow: True
+axes.grid: False
+grid.linewidth: 0.4
+grid.alpha: 0.4
+
+lines.linewidth: 1.0
+lines.markersize: 4
+lines.markeredgewidth: 0.4
+
+legend.frameon: False
+legend.borderpad: 0.2
+legend.handlelength: 1.6
+legend.labelspacing: 0.3
+
+figure.constrained_layout.use: True
+savefig.dpi: 600
+savefig.pad_inches: 0.02
+
+font.size: 8
+axes.labelsize: 8
+axes.titlesize: 8
+xtick.labelsize: 8
+ytick.labelsize: 8
+legend.fontsize: 8
+legend.title_fontsize: 8
+
+axes.formatter.use_mathtext: True
+axes.unicode_minus: False
+text.usetex: False
