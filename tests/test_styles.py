@@ -124,6 +124,12 @@ def test_legend_above_sits_under_the_title(tmp_path):
     assert bbox.y0 > ax.get_position().y1
     assert bbox.x0 >= -0.01
     assert bbox.x1 <= 1.01
+    fig.draw_without_rendering()
+    renderer = fig.canvas.get_renderer()
+    entries = leg._legend_handle_box.get_window_extent(renderer)
+    spine = ax.get_window_extent(renderer).y1
+    gap = (entries.y0 - spine) * 72 / renderer.dpi
+    assert gap == pytest.approx(plt.rcParams["legend.fontsize"], abs=1.0)
     plt.close(fig)
 
 

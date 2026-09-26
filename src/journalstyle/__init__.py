@@ -308,6 +308,33 @@ def _row_major(handles, labels, ncol):
     return list(reordered_handles), list(reordered_labels)
 
 
+def _legend_gap_pt(fig, leg, axes) -> float:
+    """Points of clear space between the legend entries and the axes."""
+    renderer = fig.canvas.get_renderer()
+    entries = leg._legend_handle_box.get_window_extent(renderer)
+    spine = max(ax.get_window_extent(renderer).y1 for ax in axes)
+    return (entries.y0 - spine) * 72 / renderer.dpi
+
+
+def _open_above_legend(fig, leg, axes) -> None:
+    """Leave about one em between an above-legend and the top spine.
+
+    Constrained layout pins an outside legend against that spine. The
+    built-in pad is only a couple of points, so the entries sit on the frame.
+    """
+    from matplotlib.offsetbox import DrawingArea
+
+    target = float(leg._fontsize)
+    spacer = DrawingArea(0, 0, 0, 0)
+    leg._legend_box.get_children().append(spacer)
+    fig.draw_without_rendering()
+    gap = _legend_gap_pt(fig, leg, axes)
+    spacer.height = min(max(0.0, target - gap), 2 * target)
+    if spacer.height <= 0:
+        leg._legend_box.get_children().remove(spacer)
+    fig.draw_without_rendering()
+
+
 def _legend_wider_than_figure(fig, leg) -> bool:
     """True when the legend sticks out of the left or right figure edge."""
     fig.draw_without_rendering()
@@ -323,8 +350,9 @@ def legend(axes=None, *args, loc="below", ncol=None, **kwargs):
     """Place one legend outside the axes, keeping the axes at full width.
 
     ``loc="below"`` sits under the x-axis. ``loc="above"`` sits above the
-    axes. On a single axes, a title already set on that axes becomes the
-    legend title, so the entries sit directly under the heading.
+    axes, with about one em between the entries and the top spine. On a
+    single axes, a title already set on that axes becomes the legend title,
+    so the entries sit directly under the heading.
 
     Do not place that legend with ``Axes.legend(..., bbox_to_anchor=...)``.
     Constrained layout counts an axes legend as part of the axes. A legend
@@ -378,4 +406,6 @@ def legend(axes=None, *args, loc="below", ncol=None, **kwargs):
         if ncol <= 1 or not _legend_wider_than_figure(fig, leg):
             break
         ncol -= 1
+    if loc == "above":
+        _open_above_legend(fig, leg, axs)
     return leg
