@@ -37,6 +37,17 @@ fig.savefig("fig.pdf")            # bbox_inches="tight" は付けない
 
 `bbox_inches="tight"` で余白を切ると、PDF の幅が段幅より小さくなります。原稿で `\columnwidth` に引き伸ばすと、ポイント数が指定より大きくなります。
 
+凡例を軸の外に置くときは `js.legend` を使います。`loc="above"` はタイトルの直下、`loc="below"` は横軸の下です。
+
+```python
+ax.set_title("Head")
+js.legend(ax, loc="above")
+# js.legend(ax, loc="below")
+fig.savefig("fig.pdf")
+```
+
+`ax.legend(..., bbox_to_anchor=...)` で軸の外に出すと、constrained layout が凡例を軸の一部として数えます。凡例が段幅より広いと軸が潰れて、`savefig` の図が細い帯か空白になります。`js.legend` は図の凡例なので、高さだけを空けて軸の幅は残します。列に収まらないときは行を折り返します。
+
 保存時の解像度は `savefig.dpi` の 600 です。画面表示用の `figure.dpi` は上げていません。
 
 ## 2段、1.5段

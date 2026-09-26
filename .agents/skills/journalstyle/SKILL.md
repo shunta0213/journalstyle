@@ -29,6 +29,14 @@ fig.savefig("fig.pdf")  # page size is the print size
 
 Do not pass `bbox_inches="tight"`. Cropping changes the width, so the point size no longer matches the journal.
 
+Place a legend outside the axes with `js.legend`, not `Axes.legend(..., bbox_to_anchor=...)`. Constrained layout treats an axes legend as part of the axes, so a legend wider than the column shrinks the axes and `savefig` writes a sliver or a blank plot. `loc="above"` sits under the axes title. `loc="below"` sits under the x-axis. Entries wrap to the column width.
+
+```python
+ax.set_title("Head")
+js.legend(ax, loc="above")
+fig.savefig("fig.pdf")
+```
+
 LaTeX is off unless the user asks for it and TeX is installed. Then pass `plt.style.use(["journal-aps", "latex"])` or `["journal-nature", "latex"]`. The single name `latex` picks Times or Helvetica from the journal. See `docs/usage.md`. Keep subfigure prose in the manuscript `\caption`, and put only the panel tag on the figure.
 
 ```python
