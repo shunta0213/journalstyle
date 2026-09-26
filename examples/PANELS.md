@@ -23,6 +23,23 @@ fig.savefig("fig.pdf")
 
 `aspect` は図全体の高さ / 幅です。
 
+## 凡例
+
+系列の名前は `js.legend` でパネルの外に置きます。`loc="above"` はパネルの上、`loc="below"` は横軸の下です。2 枚で線種が同じときは、ラベルを付けた側だけを渡します。
+
+```python
+fig, axes = js.subplots("aps", 1, 2, columns=1, aspect=0.72)
+axes[0].plot(x, y1, label=r"$\sin$")
+axes[0].plot(x, y2, label=r"$\cos$")
+axes[1].plot(x, y3)
+axes[1].plot(x, y4)
+js.label_panels(axes, journal="aps")
+js.legend(axes[0], loc="above")
+fig.savefig("fig.pdf")
+```
+
+![APS two panels with a legend above](output/panels/aps-legend.png)
+
 ## APS Physical Review (`aps`)
 
 記号 `(a)`、図の幅 3.375 in（1 段）。

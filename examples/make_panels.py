@@ -19,11 +19,19 @@ COLUMNS = 1
 ASPECT = 0.72
 
 
-def _draw(ax, phase: float) -> None:
+def _draw(ax, phase: float, *, labeled: bool = False) -> None:
     x = np.linspace(0, 2 * np.pi, 200)
     # Stay clear of the upper-left corner, where an inside label sits.
-    ax.plot(x, 0.65 * np.sin(x + phase) - 0.2)
-    ax.plot(x, 0.65 * np.cos(x + phase) - 0.35)
+    ax.plot(
+        x,
+        0.65 * np.sin(x + phase) - 0.2,
+        label=r"$\sin$" if labeled else None,
+    )
+    ax.plot(
+        x,
+        0.65 * np.cos(x + phase) - 0.35,
+        label=r"$\cos$" if labeled else None,
+    )
     ax.set_ylim(-1.35, 1.15)
     ax.set_xlabel(r"$x$")
     ax.set_ylabel(r"$y$")
@@ -40,6 +48,23 @@ def render(journal: str) -> Path:
     png = OUT / f"{journal}.png"
     pdf = OUT / f"{journal}.pdf"
     fig.savefig(pdf)
+    fig.savefig(png, dpi=200)
+    plt.close(fig)
+    return png
+
+
+def render_legend() -> Path:
+    """One shared legend above both panels. Labels come from the first axes."""
+    fig, axes = js.subplots(
+        "aps", 1, 2, columns=COLUMNS, aspect=ASPECT, latex=True
+    )
+    _draw(axes[0], 0.0, labeled=True)
+    _draw(axes[1], 0.6)
+    js.label_panels(axes, journal="aps")
+    js.legend(axes[0], loc="above")
+    OUT.mkdir(parents=True, exist_ok=True)
+    png = OUT / "aps-legend.png"
+    fig.savefig(OUT / "aps-legend.pdf")
     fig.savefig(png, dpi=200)
     plt.close(fig)
     return png
@@ -72,6 +97,23 @@ def write_doc(paths: dict[str, Path]) -> None:
         "",
         "`aspect` は図全体の高さ / 幅です。",
         "",
+        "## 凡例",
+        "",
+        "系列の名前は `js.legend` でパネルの外に置きます。`loc=\"above\"` はパネルの上、`loc=\"below\"` は横軸の下です。2 枚で線種が同じときは、ラベルを付けた側だけを渡します。",
+        "",
+        "```python",
+        'fig, axes = js.subplots("aps", 1, 2, columns=1, aspect=0.72)',
+        'axes[0].plot(x, y1, label=r"$\\sin$")',
+        'axes[0].plot(x, y2, label=r"$\\cos$")',
+        "axes[1].plot(x, y3)",
+        "axes[1].plot(x, y4)",
+        'js.label_panels(axes, journal="aps")',
+        'js.legend(axes[0], loc="above")',
+        'fig.savefig("fig.pdf")',
+        "```",
+        "",
+        "![APS two panels with a legend above](output/panels/aps-legend.png)",
+        "",
     ]
     for key, path in paths.items():
         spec = js.get(key)
@@ -95,6 +137,7 @@ def main() -> None:
         png = render(key)
         paths[key] = png
         print(png)
+    print(render_legend())
     write_doc(paths)
     print(DOC)
 
