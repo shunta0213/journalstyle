@@ -26,8 +26,9 @@ pip install -e .
 import journalstyle as js
 
 fig, ax = js.subplots("aps")          # 1段、3.375 in
-ax.plot(x, y)
+ax.plot(x, y, label="data")
 ax.set_xlabel(r"$x$")
+js.legend(ax, loc="below")            # 横軸の下。loc="above" はタイトルの直下
 fig.savefig("fig.pdf")                # 幅 3.375 in の PDF
 ```
 

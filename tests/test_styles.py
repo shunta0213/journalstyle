@@ -88,6 +88,53 @@ def test_panel_labels_follow_the_journal():
     assert js.get("nature").panel_label_pt == 8
 
 
+def _legend_bbox(fig, leg):
+    fig.draw_without_rendering()
+    tight = leg.get_tightbbox(fig.canvas.get_renderer())
+    return fig.transFigure.inverted().transform_bbox(tight)
+
+
+def test_legend_below_keeps_the_axes_on_save(tmp_path):
+    fig, ax = js.subplots("aps")
+    for label in ("Experiment A", "Experiment B", "Experiment C", "Experiment D"):
+        ax.plot([0, 1], [0, 1], label=label)
+    ax.set_xlabel("x")
+    leg = js.legend(ax, loc="below")
+    fig.savefig(tmp_path / "below.pdf")
+    assert fig.get_figwidth() == pytest.approx(3.375)
+    assert ax.get_position().width > 0.7
+    bbox = _legend_bbox(fig, leg)
+    assert bbox.x0 >= -0.01
+    assert bbox.x1 <= 1.01
+    assert bbox.y1 < ax.get_position().y0
+    plt.close(fig)
+
+
+def test_legend_above_sits_under_the_title(tmp_path):
+    fig, ax = js.subplots("aaas")
+    ax.set_title("Head")
+    for label in ("Experiment A", "Experiment B", "Experiment C", "Experiment D"):
+        ax.plot([0, 1], [0, 1], label=label)
+    leg = js.legend(ax, loc="above")
+    fig.savefig(tmp_path / "above.pdf")
+    assert leg.get_title().get_text() == "Head"
+    assert ax.get_title() == ""
+    assert ax.get_position().width > 0.7
+    bbox = _legend_bbox(fig, leg)
+    assert bbox.y0 > ax.get_position().y1
+    assert bbox.x0 >= -0.01
+    assert bbox.x1 <= 1.01
+    plt.close(fig)
+
+
+def test_legend_rejects_an_unknown_location():
+    fig, ax = js.subplots("aps")
+    ax.plot([0, 1], [0, 1], label="a")
+    with pytest.raises(ValueError, match="below"):
+        js.legend(ax, loc="best")
+    plt.close(fig)
+
+
 def test_bw_extra_overrides_colors():
     js.use("aps", extras=("journal-bw",))
     colors = [c["color"] for c in plt.rcParams["axes.prop_cycle"]]

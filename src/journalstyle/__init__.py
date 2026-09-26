@@ -268,3 +268,114 @@ def label_panels(
             annotation_clip=False,
         )
         text.set_in_layout(True)
+
+
+_LEGEND_LOC = {
+    "below": "outside lower center",
+    "above": "outside upper center",
+}
+
+
+def _axes_list(axes):
+    import numpy as np
+
+    if axes is None:
+        return [plt.gca()]
+    return list(np.atleast_1d(axes).ravel())
+
+
+def _row_major(handles, labels, ncol):
+    """Reorder so a figure legend reads left to right, then down.
+
+    Matplotlib fills legend columns first. A wrapped legend would otherwise
+    read down the first column.
+    """
+    pairs = list(zip(handles, labels))
+    count = len(pairs)
+    if ncol <= 1 or count <= ncol:
+        return list(handles), list(labels)
+    nrow = (count + ncol - 1) // ncol
+    slots = [None] * (nrow * ncol)
+    for index, pair in enumerate(pairs):
+        slots[index] = pair
+    ordered = [
+        slots[row * ncol + col]
+        for col in range(ncol)
+        for row in range(nrow)
+        if slots[row * ncol + col] is not None
+    ]
+    reordered_handles, reordered_labels = zip(*ordered)
+    return list(reordered_handles), list(reordered_labels)
+
+
+def _legend_wider_than_figure(fig, leg) -> bool:
+    """True when the legend sticks out of the left or right figure edge."""
+    fig.draw_without_rendering()
+    renderer = fig.canvas.get_renderer()
+    tight = leg.get_tightbbox(renderer)
+    if tight is None or tight.width <= 0:
+        return False
+    bbox = fig.transFigure.inverted().transform_bbox(tight)
+    return bbox.x0 < -0.005 or bbox.x1 > 1.005
+
+
+def legend(axes=None, *args, loc="below", ncol=None, **kwargs):
+    """Place one legend outside the axes, keeping the axes at full width.
+
+    ``loc="below"`` sits under the x-axis. ``loc="above"`` sits above the
+    axes. On a single axes, a title already set on that axes becomes the
+    legend title, so the entries sit directly under the heading.
+
+    Do not place that legend with ``Axes.legend(..., bbox_to_anchor=...)``.
+    Constrained layout counts an axes legend as part of the axes. A legend
+    wider than the column then shrinks the axes, and ``savefig`` writes a
+    sliver or an empty plot. A figure legend only reserves a horizontal band.
+
+    ``ncol`` is the starting column count. It is reduced until the legend
+    fits the column width. The default is a single row.
+    """
+    try:
+        outside = _LEGEND_LOC[loc]
+    except KeyError:
+        known = ", ".join(_LEGEND_LOC)
+        raise ValueError(f"loc must be one of {known}.") from None
+
+    axs = _axes_list(axes)
+    fig = axs[0].figure
+    if args:
+        handles = list(args[0])
+        labels = list(args[1]) if len(args) > 1 else [h.get_label() for h in handles]
+    else:
+        handles, labels = [], []
+        for ax in axs:
+            found_handles, found_labels = ax.get_legend_handles_labels()
+            handles.extend(found_handles)
+            labels.extend(found_labels)
+    for ax in axs:
+        existing = ax.get_legend()
+        if existing is not None:
+            existing.remove()
+
+    if loc == "above" and len(axs) == 1 and "title" not in kwargs:
+        title = axs[0].get_title()
+        if title:
+            kwargs["title"] = title
+            axs[0].set_title("")
+
+    if ncol is None:
+        ncol = kwargs.pop("ncols", None)
+    else:
+        kwargs.pop("ncols", None)
+    if ncol is None:
+        ncol = max(len(labels), 1)
+
+    leg = None
+    while True:
+        if leg is not None:
+            leg.remove()
+        row_handles, row_labels = _row_major(handles, labels, ncol)
+        leg = fig.legend(row_handles, row_labels, loc=outside, ncol=ncol, **kwargs)
+        if ncol <= 1 or not _legend_wider_than_figure(fig, leg):
+            break
+        ncol -= 1
+    return leg
