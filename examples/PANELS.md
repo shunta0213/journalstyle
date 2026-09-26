@@ -34,11 +34,19 @@ axes[0].plot(x, y2, label=r"$\cos$")
 axes[1].plot(x, y3)
 axes[1].plot(x, y4)
 js.label_panels(axes, journal="aps")
-js.legend(axes[0], loc="above")
+js.legend(axes[0], loc="above")  # パネルの上
 fig.savefig("fig.pdf")
 ```
 
-![APS two panels with a legend above](output/panels/aps-legend.png)
+![APS two panels with a legend above](output/panels/aps-legend-above.png)
+
+横軸の下に置くときは `loc="below"` です。
+
+```python
+js.legend(axes[0], loc="below")
+```
+
+![APS two panels with a legend below](output/panels/aps-legend-below.png)
 
 ## APS Physical Review (`aps`)
 

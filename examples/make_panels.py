@@ -53,18 +53,18 @@ def render(journal: str) -> Path:
     return png
 
 
-def render_legend() -> Path:
-    """One shared legend above both panels. Labels come from the first axes."""
+def render_legend(loc: str) -> Path:
+    """One shared legend outside both panels. Labels come from the first axes."""
     fig, axes = js.subplots(
         "aps", 1, 2, columns=COLUMNS, aspect=ASPECT, latex=True
     )
     _draw(axes[0], 0.0, labeled=True)
     _draw(axes[1], 0.6)
     js.label_panels(axes, journal="aps")
-    js.legend(axes[0], loc="above")
+    js.legend(axes[0], loc=loc)
     OUT.mkdir(parents=True, exist_ok=True)
-    png = OUT / "aps-legend.png"
-    fig.savefig(OUT / "aps-legend.pdf")
+    png = OUT / f"aps-legend-{loc}.png"
+    fig.savefig(OUT / f"aps-legend-{loc}.pdf")
     fig.savefig(png, dpi=200)
     plt.close(fig)
     return png
@@ -108,11 +108,19 @@ def write_doc(paths: dict[str, Path]) -> None:
         "axes[1].plot(x, y3)",
         "axes[1].plot(x, y4)",
         'js.label_panels(axes, journal="aps")',
-        'js.legend(axes[0], loc="above")',
+        'js.legend(axes[0], loc="above")  # パネルの上',
         'fig.savefig("fig.pdf")',
         "```",
         "",
-        "![APS two panels with a legend above](output/panels/aps-legend.png)",
+        "![APS two panels with a legend above](output/panels/aps-legend-above.png)",
+        "",
+        "横軸の下に置くときは `loc=\"below\"` です。",
+        "",
+        "```python",
+        'js.legend(axes[0], loc="below")',
+        "```",
+        "",
+        "![APS two panels with a legend below](output/panels/aps-legend-below.png)",
         "",
     ]
     for key, path in paths.items():
@@ -137,7 +145,8 @@ def main() -> None:
         png = render(key)
         paths[key] = png
         print(png)
-    print(render_legend())
+    for loc in ("above", "below"):
+        print(render_legend(loc))
     write_doc(paths)
     print(DOC)
 
