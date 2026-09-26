@@ -1,5 +1,10 @@
-# Set text and math with LaTeX. Requires a TeX installation.
-# LaTeX then controls the face (Computer Modern unless the preamble changes it).
+# LaTeX for serif journals (APS, IEEE). Requires a TeX installation.
+# Apply after the journal style:
+#   plt.style.use(["journal", "journal-aps", "journal-latex"])
+#
+# Matplotlib loads mathptmx because those styles list Times in font.serif,
+# so text and math are Times rather than Computer Modern.
+# Sans-serif journals should use journal-latex-sans instead.
 
 text.usetex: True
 text.latex.preamble: \usepackage{amsmath} \usepackage{amssymb}

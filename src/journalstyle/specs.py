@@ -29,6 +29,12 @@ class Journal:
     marker_size: float = 4.0
     max_height_mm: float | None = None
     panel_label_pt: float | None = None
+    # "{letter}" or "({letter})". letter is already cased.
+    panel_form: str = "({letter})"
+    panel_case: str = "lower"
+    # Physical Review puts (a) inside the axes. Nature and Science keep
+    # line-plot labels outside the frame.
+    panel_inside: bool = False
     distinguish_in_grayscale: bool = False
 
     def width_in(self, columns: float) -> float:
@@ -79,9 +85,12 @@ JOURNALS: dict[str, Journal] = {
         notes=(
             "Smallest capitals must be at least 2 mm (~8 pt) and strokes at "
             "least 0.5 pt after reduction. REVTeX defaults to Times; STIX is "
-            "the matching face when LaTeX is off."
+            "the matching face when LaTeX is off. Multipart figures are "
+            "cited as Fig. 1(a); put (a), (b) on the panels."
         ),
         max_height_mm=230,
+        panel_label_pt=8,
+        panel_inside=True,
     ),
     "ieee": Journal(
         key="ieee",
@@ -97,7 +106,8 @@ JOURNALS: dict[str, Journal] = {
         notes=(
             "One column is 3.5 in and two columns are 7.16 in. Type should be "
             "about 9–10 pt at full size. Line art should stay readable in "
-            "grayscale, so series differ by both color and line style."
+            "grayscale, so series differ by both color and line style. "
+            "Multipart figures use (a), (b) on the panels and in the caption."
         ),
         max_height_mm=8.8 * 25.4,
         distinguish_in_grayscale=True,
@@ -112,14 +122,16 @@ JOURNALS: dict[str, Journal] = {
         source="https://www.nature.com/nature/for-authors/final-submission",
         notes=(
             "Sans serif, preferably Helvetica or Arial. Non-panel text is at "
-            "most 7 pt; panel labels are 8 pt bold. A column-and-a-half may be "
-            "120–136 mm; 128 mm is the midpoint. Strokes should be 0.25–1 pt."
+            "most 7 pt; panel labels are 8 pt bold upright a, b, c with no "
+            "parentheses. A column-and-a-half may be 120–136 mm; 128 mm is "
+            "the midpoint. Strokes should be 0.25–1 pt."
         ),
         axes_linewidth=0.5,
         line_linewidth=0.8,
         marker_size=3.5,
         max_height_mm=247,
         panel_label_pt=8,
+        panel_form="{letter}",
     ),
     "aaas": Journal(
         key="aaas",
@@ -134,9 +146,13 @@ JOURNALS: dict[str, Journal] = {
         notes=(
             "Printed widths are usually 5.7 cm, 12.1 cm, or 18.4 cm. Lettering "
             "should be about 7 pt and no smaller than 5 pt. Helvetica is preferred. "
-            "Most line plots need the 2-column width; 1 column is narrow."
+            "Most line plots need the 2-column width; 1 column is narrow. "
+            "Multipart panels are uppercase A, B at 10 pt bold in the upper left."
         ),
         max_height_mm=230,
+        panel_label_pt=10,
+        panel_form="{letter}",
+        panel_case="upper",
     ),
     "acs": Journal(
         key="acs",

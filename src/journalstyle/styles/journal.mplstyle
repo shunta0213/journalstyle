@@ -19,6 +19,11 @@ ytick.major.width: 0.6
 xtick.minor.width: 0.4
 ytick.minor.width: 0.4
 
+axes.labelpad: 0.4
+xtick.major.pad: 1.2
+ytick.major.pad: 1.2
+figure.constrained_layout.w_pad: 0.02
+figure.constrained_layout.h_pad: 0.02
 axes.linewidth: 0.6
 axes.axisbelow: True
 axes.grid: False
