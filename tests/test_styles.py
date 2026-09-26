@@ -7,8 +7,25 @@ from journalstyle.specs import JOURNALS
 
 def test_styles_are_registered():
     assert "journal" in plt.style.available
+    assert "journal-latex" in plt.style.available
+    assert "journal-latex-sans" in plt.style.available
     for key in JOURNALS:
         assert f"journal-{key}" in plt.style.available
+
+
+def test_latex_styles_match_the_journal_family():
+    with plt.style.context(["journal-aps", "latex"]):
+        assert plt.rcParams["text.usetex"] is True
+        assert "sfmath" not in plt.rcParams["text.latex.preamble"]
+        assert plt.rcParams["xtick.direction"] == "in"
+        assert plt.rcParams["figure.figsize"][0] == pytest.approx(3.375, abs=0.002)
+    with plt.style.context(["journal-nature", "latex"]):
+        assert plt.rcParams["text.usetex"] is True
+        assert "sfmath" in plt.rcParams["text.latex.preamble"]
+        assert plt.rcParams["font.family"][0] == "sans-serif"
+        assert plt.rcParams["font.serif"][0] == "Computer Modern Roman"
+    js.use("nature", latex=True)
+    assert "sfmath" in plt.rcParams["text.latex.preamble"]
 
 
 def test_single_column_width_matches_spec():
@@ -61,6 +78,14 @@ def test_context_restores_previous_style():
 def test_aaas_three_columns():
     width, _ = js.figure_size("aaas", columns=3)
     assert width == pytest.approx(184 / 25.4)
+
+
+def test_panel_labels_follow_the_journal():
+    assert js.format_panel("aps", 0) == "(a)"
+    assert js.format_panel("nature", 1) == "b"
+    assert js.format_panel("aaas", 0) == "A"
+    assert js.get("aaas").panel_label_pt == 10
+    assert js.get("nature").panel_label_pt == 8
 
 
 def test_bw_extra_overrides_colors():

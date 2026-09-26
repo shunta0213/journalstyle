@@ -1,0 +1,12 @@
+# LaTeX for sans-serif journals (Nature, Science, ACS, Elsevier, RSC).
+# Apply after the journal style:
+#   plt.style.use(["journal", "journal-nature", "journal-latex-sans"])
+#
+# Matplotlib also loads a serif math package from font.serif. The default list
+# includes Times (mathptmx), which clashes with sfmath, so this style narrows
+# the serif list to Computer Modern. Text itself stays Helvetica via the
+# journal style's sans-serif family.
+
+text.usetex: True
+text.latex.preamble: \usepackage{amsmath} \usepackage{amssymb} \usepackage{sfmath}
+font.serif: Computer Modern Roman

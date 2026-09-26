@@ -39,22 +39,35 @@ with js.context("nature", columns=1.5):
     fig, ax = plt.subplots()
 ```
 
-スタイル名を直接指定することもできます。
+`plt.style.use` で指定することもできます。`import journalstyle` のあとで呼んでください。
 
 ```python
-import journalstyle  # 読み込むとスタイルが登録される
+import journalstyle
 import matplotlib.pyplot as plt
 
-plt.style.use(["journal", "journal-aps"])
+plt.style.use("journal-aps")
+plt.style.use(["journal-nature", "latex"])  # LaTeX を使うときだけ足す
 ```
 
-`journalstyle` を import してから `plt.style.use` してください。SciencePlots と同じ手順です。
+`latex` は雑誌に合わせて Times か Helvetica を選びます。詳細は [docs/usage.md](docs/usage.md) です。
 
 白黒印刷で系列を分けるときは `extras=("journal-bw",)` を渡します。IEEE は色と線種の両方で分かれるようにしてあります。
 
-パネル記号は `js.label_panels(axes, journal="nature")` です。Nature では 8 pt の太字になります。
+## 複数パネル
 
-LaTeX で文字を組む場合だけ `latex=True` にします。このときは書体が Computer Modern になり、スタイル側の Times や Arial は効きません。APS の既定（Times）に近づけるなら LaTeX はオフのままにしてください。STIX が Times の代わりになります。
+幅は図全体に対して指定します。1段幅で横に2枚並べる例です。
+
+```python
+fig, axes = js.subplots("aps", 1, 2, columns=1, aspect=0.72)
+axes[0].plot(x, y1)
+axes[1].plot(x, y2)
+js.label_panels(axes, journal="aps")  # (a) は軸の内側
+fig.savefig("fig.pdf")
+```
+
+記号は雑誌で違います。APS、IEEE、ACS、Elsevier、RSC は `(a)`、Nature は括弧なしの太字 `a`（8 pt）、Science は太字の `A`（10 pt）です。Physical Review は軸の内側の左上、空いている角に置きます。Nature と Science の折れ線は軸の外です。画像とヒートマップは `inside=True` です。見本は `examples/PANELS.md` です。図全体を 2 段にするときは `columns=2` にします。
+
+LaTeX は `plt.style.use(["journal-aps", "latex"])` のように `latex` を足します。書体は雑誌側で決まります。パネルの説明文は図に焼き込まず、原稿の `\caption` に書きます。手順は [docs/usage.md](docs/usage.md) です。
 
 ## 収録している雑誌
 

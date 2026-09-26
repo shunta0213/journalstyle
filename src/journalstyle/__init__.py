@@ -22,12 +22,6 @@ from matplotlib import rc_params_from_file
 from .specs import JOURNALS, Journal
 
 DEFAULT_ASPECT = 0.75
-# Matplotlib loads mathptmx or helvet from the journal font list. sfmath keeps
-# sans-serif math in the same face instead of Computer Modern.
-_LATEX_PREAMBLE = {
-    "serif": r"\usepackage{amsmath} \usepackage{amssymb}",
-    "sans-serif": r"\usepackage{amsmath} \usepackage{amssymb} \usepackage{sfmath}",
-}
 _FONT_KEYS = (
     "font.size",
     "axes.labelsize",
@@ -40,12 +34,22 @@ _FONT_KEYS = (
 
 
 def _register_styles() -> None:
-    """Add the bundled stylesheets to ``plt.style.library``."""
+    """Add the bundled stylesheets to ``plt.style.library``.
+
+    Each ``journal-<name>`` already includes the shared ``journal`` settings,
+    so ``plt.style.use("journal-aps")`` is enough.
+    """
     styles_path = Path(__file__).resolve().parent / "styles"
     library = plt.style.library
     for path in styles_path.glob("*.mplstyle"):
         params = rc_params_from_file(path, use_default_template=False)
         library.setdefault(path.stem, {}).update(params)
+    base = dict(library["journal"])
+    for key in JOURNALS:
+        name = f"journal-{key}"
+        merged = dict(base)
+        merged.update(library[name])
+        library[name] = merged
     try:
         available = plt.style.available
     except AttributeError:  # matplotlib < 3.11
@@ -53,7 +57,41 @@ def _register_styles() -> None:
     available[:] = sorted(library.keys())
 
 
+def _latex_style(style_names: list[str]) -> str:
+    """Pick Times or Helvetica LaTeX from a journal name already in the list."""
+    for name in reversed(style_names):
+        key = name.removeprefix("journal-") if isinstance(name, str) else ""
+        spec = JOURNALS.get(key)
+        if spec is not None:
+            return "journal-latex" if spec.family == "serif" else "journal-latex-sans"
+    family = plt.rcParams["font.family"]
+    family = family[0] if isinstance(family, (list, tuple)) else family
+    if family == "sans-serif":
+        return "journal-latex-sans"
+    return "journal-latex"
+
+
+def _expand_style(style):
+    """Replace the name ``latex`` with the face that matches the journal."""
+    if style == "latex":
+        return _latex_style([])
+    if isinstance(style, (str, dict)) or not isinstance(style, (list, tuple)):
+        return style
+    names = [item for item in style if isinstance(item, str)]
+    return [_latex_style(names) if item == "latex" else item for item in style]
+
+
+def _install_style_use() -> None:
+    original = plt.style.use
+
+    def use(style):
+        return original(_expand_style(style))
+
+    plt.style.use = use
+
+
 _register_styles()
+_install_style_use()
 
 
 def journals() -> list[str]:
@@ -104,13 +142,8 @@ def _layers(
     spec = get(journal)
     layers: list = ["journal", f"journal-{journal}"]
     if latex:
-        layers.append("journal-latex")
-        latex_rc: dict = {"text.latex.preamble": _LATEX_PREAMBLE[spec.family]}
-        # Matplotlib also loads the serif face. The default list includes Times,
-        # and mathptmx then clashes with sfmath.
-        if spec.family == "sans-serif":
-            latex_rc["font.serif"] = ["Computer Modern Roman"]
-        layers.append(latex_rc)
+        style = "journal-latex" if spec.family == "serif" else "journal-latex-sans"
+        layers.append(style)
     else:
         layers.append("journal-no-latex")
     layers.extend(extras)
@@ -177,27 +210,61 @@ def subplots(
     return fig, ax
 
 
-def label_panels(axes, journal: str | None = None, *, size: float | None = None) -> None:
-    """Tag axes ``(a)``, ``(b)``, ... in the upper left.
+def format_panel(journal: str, index: int) -> str:
+    """Return the panel tag for ``journal``, such as ``(a)``, ``a``, or ``A``."""
+    spec = get(journal)
+    letter = chr(ord("a") + index)
+    if spec.panel_case == "upper":
+        letter = letter.upper()
+    return spec.panel_form.format(letter=letter)
 
-    Nature specifies 8 pt bold panel labels. Other journals use the current
-    font size in bold.
+
+def label_panels(
+    axes,
+    journal: str | None = None,
+    *,
+    size: float | None = None,
+    inside: bool | None = None,
+) -> None:
+    """Tag each axes with that journal's panel label.
+
+    Physical Review puts ``(a)`` inside the axes, in the upper left. Nature
+    and Science put line-plot labels just outside that corner. Pass
+    ``inside=True`` for images and heatmaps. Science asks for those labels
+    inside the frame.
+
+    Nature uses 8 pt bold upright ``a``. Science uses 10 pt bold ``A``.
+    The others use ``(a)``.
     """
     import numpy as np
 
     flat = np.atleast_1d(axes).ravel()
-    if size is None and journal is not None:
-        size = get(journal).panel_label_pt
+    spec = get(journal) if journal is not None else None
+    if size is None and spec is not None:
+        size = spec.panel_label_pt
     if size is None:
         size = plt.rcParams["font.size"]
+    if inside is None:
+        inside = bool(spec.panel_inside) if spec is not None else False
     for index, ax in enumerate(flat):
-        ax.text(
-            0.02,
-            0.98,
-            f"({chr(ord('a') + index)})",
-            transform=ax.transAxes,
-            va="top",
+        if spec is None:
+            label = f"({chr(ord('a') + index)})"
+        else:
+            label = format_panel(spec.key, index)
+        if inside:
+            xy, xytext, va = (0.02, 0.98), (0, 0), "top"
+        else:
+            xy, xytext, va = (0.0, 1.0), (0, 1), "bottom"
+        text = ax.annotate(
+            label,
+            xy=xy,
+            xycoords="axes fraction",
+            xytext=xytext,
+            textcoords="offset points",
             ha="left",
+            va=va,
             fontsize=size,
             fontweight="bold",
+            annotation_clip=False,
         )
+        text.set_in_layout(True)

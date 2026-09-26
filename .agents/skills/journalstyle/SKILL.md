@@ -29,11 +29,23 @@ fig.savefig("fig.pdf")  # page size is the print size
 
 Do not pass `bbox_inches="tight"`. Cropping changes the width, so the point size no longer matches the journal.
 
-LaTeX is off unless the user asks for it and TeX is installed. Then pass `latex=True`. Serif journals use Times; sans-serif journals use Helvetica.
+LaTeX is off unless the user asks for it and TeX is installed. Then pass `plt.style.use(["journal-aps", "latex"])` or `["journal-nature", "latex"]`. The single name `latex` picks Times or Helvetica from the journal. See `docs/usage.md`. Keep subfigure prose in the manuscript `\caption`, and put only the panel tag on the figure.
 
 ```python
 fig, ax = js.subplots("nature", columns=2, latex=True)
 ```
+
+## Multipanel figures
+
+Size the whole figure, not each panel. Two panels side by side in one column:
+
+```python
+fig, axes = js.subplots("aps", 1, 2, columns=1, aspect=0.72)
+js.label_panels(axes, journal="aps")
+fig.savefig("fig.pdf")
+```
+
+`label_panels` follows the journal: `(a)` for APS, IEEE, ACS, Elsevier, and RSC; upright bold `a` at 8 pt for Nature; bold `A` at 10 pt for Science. Physical Review places `(a)` inside the axes at the upper left, in a corner clear of the data. Nature and Science place line-plot labels just outside that corner. Widen the whole figure with `columns=2` when the pair should span two columns. For images and heatmaps pass `inside=True`. For Science, prefer `columns=2` or `columns=3` rather than one column when the panels are wide.
 
 ## Journals
 
