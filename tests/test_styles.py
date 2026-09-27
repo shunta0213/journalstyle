@@ -88,6 +88,24 @@ def test_panel_labels_follow_the_journal():
     assert js.get("nature").panel_label_pt == 8
 
 
+def test_inside_panel_label_clears_inward_ticks():
+    fig, axes = js.subplots("aps", 1, 2, columns=1, aspect=0.72)
+    for ax in axes:
+        ax.plot([0, 1], [0, 1])
+    js.label_panels(axes, journal="aps")
+    fig.draw_without_rendering()
+    renderer = fig.canvas.get_renderer()
+    for ax in axes:
+        spine = ax.get_window_extent(renderer)
+        label = next(child for child in ax.get_children() if getattr(child, "get_text", lambda: "")() in {"(a)", "(b)"})
+        box = label.get_window_extent(renderer)
+        left = (box.x0 - spine.x0) * 72 / renderer.dpi
+        top = (spine.y1 - box.y1) * 72 / renderer.dpi
+        assert left >= plt.rcParams["ytick.major.size"]
+        assert top >= plt.rcParams["xtick.major.size"]
+    plt.close(fig)
+
+
 def _legend_bbox(fig, leg):
     fig.draw_without_rendering()
     tight = leg.get_tightbbox(fig.canvas.get_renderer())

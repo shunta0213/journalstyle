@@ -252,7 +252,12 @@ def label_panels(
         else:
             label = format_panel(spec.key, index)
         if inside:
-            xy, xytext, va = (0.02, 0.98), (0, 0), "top"
+            # Major ticks point inward. On a narrow panel, 2% of the axes
+            # is shorter than those ticks, so (a) sits on them.
+            pad = 1.5
+            dx = float(plt.rcParams["ytick.major.size"]) + pad
+            dy = float(plt.rcParams["xtick.major.size"]) + pad
+            xy, xytext, va = (0.0, 1.0), (dx, -dy), "top"
         else:
             xy, xytext, va = (0.0, 1.0), (0, 1), "bottom"
         text = ax.annotate(
